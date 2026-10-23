@@ -4,10 +4,8 @@ session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
 session_start();
 $isLoggedIn = !empty($_SESSION['admin']);
 
-// ====== EDIT YOUR INFO HERE ======
 $owner = [
   'name'    => 'John Joros D. Saltat',
-  // The "|" splits the headline into two lines.
   'tagline' => 'BSIT Student | Aspiring Networking & Cybersecurity Professional',
   'intro'   => 'A 3rd year BSIT student at PLV who wants to build a career in networking or cybersecurity. This portfolio is my Event-Driven Programming midterm project.',
   'school'  => 'Pamantasan ng Lungsod ng Valenzuela (PLV)',
@@ -22,14 +20,12 @@ $about = [
   'Learning journey' => 'This semester I am learning event-driven programming with JavaScript and PHP, along with Git and GitHub for version control.',
 ];
 
-// Skills and projects come from content.php (defaults) or data/content.json (saved by the admin).
 require __DIR__ . '/content.php';
 $content      = load_content();
 $skills       = $content['skills'];
 $projects     = $content['projects'];
 $filterLabels = categories();
 
-// Read saved contact messages if admin is logged in
 $messages = [];
 $msgFile = __DIR__ . '/data/messages.txt';
 if ($isLoggedIn && file_exists($msgFile)) {
@@ -37,7 +33,7 @@ if ($isLoggedIn && file_exists($msgFile)) {
   foreach (array_reverse($lines) as $line) {
     $decoded = json_decode($line, true);
     if ($decoded) {
-      $decoded['id'] = sha1(rtrim($line, "\r\n"));   // used by delete.php to find this message
+      $decoded['id'] = sha1(rtrim($line, "\r\n"));
       $messages[] = $decoded;
     }
   }
@@ -65,7 +61,7 @@ foreach ($skills as $group) $skillCount += count($group);
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($owner['name']) ?> | Portfolio</title>
   <meta name="description" content="<?= e($owner['intro']) ?>">
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -265,7 +261,6 @@ foreach ($skills as $group) $skillCount += count($group);
     <p>&copy; <?= date('Y') ?> <?= e($owner['name']) ?> &middot; <a href="<?= e($owner['github']) ?>" target="_blank" rel="noopener">GitHub</a></p>
   </footer>
 
-  <!-- Project Details Modal -->
   <div id="modal" class="modal" hidden>
     <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="mTitle">
       <button id="closeModal" type="button" aria-label="Close">Close</button>
@@ -278,7 +273,6 @@ foreach ($skills as $group) $skillCount += count($group);
     </div>
   </div>
 
-  <!-- Admin Login Modal -->
   <div id="loginModal" class="modal" hidden>
     <div class="modal-box login-box" role="dialog" aria-modal="true" aria-labelledby="lTitle">
       <button id="closeLogin" class="close-btn" type="button" aria-label="Close">Close</button>
@@ -301,7 +295,6 @@ foreach ($skills as $group) $skillCount += count($group);
   </div>
 
   <?php if ($isLoggedIn): ?>
-  <!-- Add / Edit Project Modal (admin only) -->
   <div id="projectModal" class="modal" hidden>
     <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="pHead">
       <button id="closeProject" class="close-btn" type="button" aria-label="Close">Close</button>
