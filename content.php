@@ -1,11 +1,7 @@
 <?php
-// Portfolio content: the DEFAULT skills and projects, plus helpers to load/save
-// the admin's edits in data/content.json.
-// If data/content.json does not exist yet, the defaults below are used.
 
 const CONTENT_FILE = __DIR__ . '/data/content.json';
 
-// Project filter buttons. A button only shows if at least one project uses it.
 function categories() {
   return ['web' => 'Web', 'networking' => 'Networking', 'systems-security' => 'Systems & Security'];
 }
@@ -18,8 +14,6 @@ function default_content() {
     'Tools'              => ['Git & GitHub', 'VS Code', 'XAMPP', 'PC Building'],
   ];
 
-  // 'img'  = file name (no extension) inside img/. .jpg .jpeg .png .webp all work.
-  // 'link' = live site or GitHub URL. Leave '' and the "View project" button is hidden.
   $projects = [
     [
       'title'   => 'Still Becoming',
@@ -134,7 +128,6 @@ function default_content() {
   return ['skills' => $skills, 'projects' => $projects];
 }
 
-// Read data/content.json. Falls back to the defaults if it is missing or broken.
 function load_content() {
   if (is_file(CONTENT_FILE)) {
     $data = json_decode((string)file_get_contents(CONTENT_FILE), true);

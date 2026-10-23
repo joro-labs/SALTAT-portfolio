@@ -1,11 +1,9 @@
 <?php
-// Admin login / logout. Called with fetch() from js/script.js.
+
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
 session_start();
 header('Content-Type: application/json');
 
-// Private credentials live in config.php (not on GitHub).
-// If it does not exist, the demo login in config.sample.php is used.
 $config = file_exists(__DIR__ . '/config.php')
   ? require __DIR__ . '/config.php'
   : require __DIR__ . '/config.sample.php';
@@ -16,7 +14,6 @@ function reply($ok, $message, $code = 200) {
   exit;
 }
 
-// Read one form field as a string (ignores tampered array values).
 function field($key) {
   return isset($_POST[$key]) && is_string($_POST[$key]) ? $_POST[$key] : '';
 }
@@ -34,7 +31,7 @@ if (field('action') === 'logout') {
 $username = trim(field('username'));
 $password = field('password');
 
-usleep(300000); // small delay makes password guessing slower
+usleep(300000); 
 
 if (hash_equals($config['user'], $username) && password_verify($password, $config['pass_hash'])) {
   session_regenerate_id(true);

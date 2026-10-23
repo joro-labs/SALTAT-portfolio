@@ -1,5 +1,5 @@
 <?php
-// Receives the contact form (POST), validates it on the server, saves to data/messages.txt
+
 date_default_timezone_set('Asia/Manila');
 header('Content-Type: application/json');
 
@@ -9,7 +9,7 @@ function reply($ok, $message, $code = 200) {
   exit;
 }
 
-// Read one form field as a trimmed string (ignores tampered array values).
+
 function field($key) {
   return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : '';
 }
@@ -18,11 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   reply(false, 'Use the contact form to send a message.', 405);
 }
 
-$name    = preg_replace('/\s+/u', ' ', field('name')) ?? '';   // keep the name on one line
+$name    = preg_replace('/\s+/u', ' ', field('name')) ?? '';   
 $email   = field('email');
 $message = field('message');
 
-// mb_strlen counts characters, not bytes, so emoji and accents are counted fairly.
+
 $nameLen = mb_strlen($name);
 $msgLen  = mb_strlen($message);
 
@@ -43,5 +43,5 @@ if ($saved === false) {
   reply(false, 'Could not save your message. Try again later.', 500);
 }
 
-// No htmlspecialchars here: script.js shows this text with textContent, so it is already safe.
+
 reply(true, 'Message sent. Thank you, ' . $name . '!');
