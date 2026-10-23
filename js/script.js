@@ -1,14 +1,9 @@
-// Event-Driven Programming: every feature below is triggered by a user event.
 document.addEventListener('DOMContentLoaded', () => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-
-  // 1. load event: greeting based on the time of day
   const hour = new Date().getHours();
   const timeOfDay = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   $('#greeting').textContent = timeOfDay + '! Thanks for visiting my portfolio.';
-
-  // 2. mouseover / mouseout / focus / blur events: skill descriptions
   const info = {
     'HTML': 'Page structure and semantic markup.',
     'CSS': 'Layout, themes and responsive design.',
@@ -39,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     chip.addEventListener('mouseout', reset);
     chip.addEventListener('blur', reset);
   });
-
-  // 3. scroll event: highlight the nav link of the section in view
   const navLinks = $$('.pill-nav a');
   const spy = () => {
     let current = navLinks[0];
@@ -53,8 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   window.addEventListener('scroll', spy, { passive: true });
   spy();
-
-  // 3b. scroll event (IntersectionObserver): numbers count up when they come into view
   const counters = $$('.stat b');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -73,8 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     counters.forEach(el => { el.textContent = String(el.dataset.count).padStart(2, '0') + '+'; });
   }
-
-  // 4. click + input events: filter buttons and live search
   const cards = $$('#grid .card');
   let activeFilter = 'all';
   const applyFilter = () => {
@@ -95,32 +84,25 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFilter();
   }));
   $('#search').addEventListener('input', applyFilter);
-
-  // 5. click event (event delegation): project details modal
   const modal = $('#modal');
   let lastFocused = null;
-
   const openModal = card => {
     lastFocused = card;
     $('#mTitle').textContent = card.dataset.title;
     $('#mDesc').textContent = card.dataset.desc;
     $('#mTech').textContent = card.dataset.tech;
-
     $('#mLearned').textContent = card.dataset.learned || '';
     $('#mLearnedWrap').hidden = !card.dataset.learned;
-
     const link = $('#mLink');
     const url = card.dataset.link;
-    link.hidden = !url;                      // no link yet = no button
+    link.hidden = !url;
     if (url) link.href = url;
-
     const shot = $('#mShot');
     shot.hidden = true;
     shot.onload = () => { shot.hidden = false; };
     shot.onerror = () => { shot.hidden = true; };
     shot.alt = 'Screenshot of ' + card.dataset.title;
     if (card.dataset.shot) shot.src = card.dataset.shot; else shot.removeAttribute('src');
-
     modal.hidden = false;
     $('#closeModal').focus();
   };
@@ -129,9 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.hidden = true;
     if (lastFocused) lastFocused.focus();
   };
-
   $('#grid').addEventListener('click', e => {
-    if (e.target.closest('.admin-btn')) return;   // Edit / Delete buttons are handled in 6c
+    if (e.target.closest('.admin-btn')) return;
     const card = e.target.closest('.card');
     if (card) openModal(card);
   });
@@ -142,22 +123,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   $('#closeModal').addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
-  // 6. click / submit events: Admin login & logout
-  //    (loginBtn / logoutBtn only exist in the page depending on login state)
   const loginModal = $('#loginModal');
   const loginBtn = $('#loginBtn');
   const logoutBtn = $('#logoutBtn');
   const loginForm = $('#loginForm');
   const loginPass = $('#loginPass');
   const togglePass = $('#togglePass');
-
   const closeLogin = () => {
     if (loginModal.hidden) return;
     loginModal.hidden = true;
     if (loginBtn) loginBtn.focus();
   };
-
   if (loginBtn) {
     loginBtn.addEventListener('click', () => {
       loginModal.hidden = false;
@@ -166,13 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   $('#closeLogin').addEventListener('click', closeLogin);
   loginModal.addEventListener('click', e => { if (e.target === loginModal) closeLogin(); });
-
   togglePass.addEventListener('click', () => {
     const hidden = loginPass.type === 'password';
     loginPass.type = hidden ? 'text' : 'password';
     togglePass.textContent = hidden ? 'Hide' : 'Show';
   });
-
   loginForm.addEventListener('submit', async e => {
     e.preventDefault();
     const status = $('#loginStatus');
@@ -190,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
       status.textContent = 'Could not reach the server. Run the site through PHP (see README).';
     }
   });
-
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       const fd = new FormData();
@@ -199,8 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.reload();
     });
   }
-
-  // 6b. click event (event delegation): delete a message from the admin inbox
   const inboxGrid = $('#inboxGrid');
   if (inboxGrid) {
     inboxGrid.addEventListener('click', async e => {
@@ -208,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!btn) return;
       const card = btn.closest('.card');
       if (!confirm('Delete this message? This cannot be undone.')) return;
-
       const status = $('#inboxStatus');
       const fd = new FormData();
       fd.append('id', card.dataset.id);
@@ -219,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         status.textContent = data.message;
         if (data.ok) {
           card.remove();
-          if (!$$('#inboxGrid .card').length) window.location.reload();   // show "No messages" text
+          if (!$$('#inboxGrid .card').length) window.location.reload();
         } else {
           btn.disabled = false;
         }
@@ -229,13 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  // 6c. admin only: edit projects and skills (these buttons exist only when logged in)
   const projectModal = $('#projectModal');
   const projectForm = $('#projectForm');
   const closeProject = () => { if (projectModal && !projectModal.hidden) projectModal.hidden = true; };
-
-  // Send one action to save.php and return its JSON reply.
   const sendToServer = async fd => {
     try {
       const res = await fetch('save.php', { method: 'POST', body: fd });
@@ -249,9 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Object.entries(obj).forEach(([k, v]) => fd.append(k, v));
     return fd;
   };
-
   if (projectModal) {
-    // Open the form empty (Add) or filled from a card (Edit).
     const openProjectForm = card => {
       projectForm.reset();
       $('#projectStatus').textContent = '';
@@ -265,11 +229,9 @@ document.addEventListener('DOMContentLoaded', () => {
       projectModal.hidden = false;
       projectForm.elements['title'].focus();
     };
-
     $('#addProject').addEventListener('click', () => openProjectForm(null));
     $('#closeProject').addEventListener('click', closeProject);
     projectModal.addEventListener('click', e => { if (e.target === projectModal) closeProject(); });
-
     projectForm.addEventListener('submit', async e => {
       e.preventDefault();
       const status = $('#projectStatus');
@@ -278,8 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
       status.textContent = data.message;
       if (data.ok) window.location.reload();
     });
-
-    // Edit / Delete buttons on the project cards (event delegation)
     $('#grid').addEventListener('click', async e => {
       const card = e.target.closest('.card');
       if (!card) return;
@@ -292,8 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  // Add a skill (one small form per group)
   $$('.skill-add').forEach(f => f.addEventListener('submit', async e => {
     e.preventDefault();
     const input = f.elements['name'];
@@ -301,22 +259,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await sendToServer(makeData({ action: 'skill_add', group: f.dataset.group, name: input.value }));
     if (data.ok) window.location.reload(); else alert(data.message);
   }));
-
-  // Remove a skill (the x button inside each chip)
   $$('.chip-x').forEach(btn => btn.addEventListener('click', async () => {
     if (!confirm('Remove "' + btn.dataset.name + '" from your skills?')) return;
     const data = await sendToServer(makeData({ action: 'skill_remove', group: btn.dataset.group, name: btn.dataset.name }));
     if (data.ok) window.location.reload(); else alert(data.message);
   }));
-
-  // 7. keydown event: "/" focuses the search box, Esc closes any popup
   document.addEventListener('keydown', e => {
     const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
     if (e.key === '/' && !typing) { e.preventDefault(); $('#search').focus(); }
     if (e.key === 'Escape') { closeModal(); closeLogin(); closeProject(); }
   });
-
-  // 8. input / blur / submit events: contact form validation + PHP request
   const form = $('#contactForm');
   const fields = $$('#contactForm input, #contactForm textarea');
   const rules = {
@@ -338,11 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#message').addEventListener('input', e => {
     $('#count').textContent = e.target.value.length + ' / 500';
   });
-
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const status = $('#status');
-    const allValid = fields.map(check).every(Boolean);   // map first so every field shows its error
+    const allValid = fields.map(check).every(Boolean);
     if (!allValid) {
       status.textContent = 'Fix the highlighted fields and send again.';
       return;
