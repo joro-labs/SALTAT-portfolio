@@ -1,6 +1,4 @@
 <?php
-// Admin only: add / edit / delete projects and add / remove skills.
-// Saves everything to data/content.json. Called with fetch() from js/script.js.
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
 session_start();
 header('Content-Type: application/json');
@@ -12,12 +10,10 @@ function reply($ok, $message, $code = 200) {
   exit;
 }
 
-// Read one form field as a trimmed string (ignores tampered array values).
 function field($key) {
   return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : '';
 }
 
-// Same, but squeezed onto one line.
 function line($key) {
   return trim(preg_replace('/\s+/u', ' ', field($key)) ?? '');
 }
@@ -26,12 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   reply(false, 'Method not allowed.', 405);
 }
 
-// The server checks the login. Hiding the buttons in the page is not enough.
 if (empty($_SESSION['admin'])) {
   reply(false, 'Please log in first.', 403);
 }
 
-// Lock so two saves at the same time cannot overwrite each other.
 $dir = __DIR__ . '/data';
 if (!is_dir($dir)) mkdir($dir, 0755, true);
 $lock = fopen($dir . '/content.lock', 'c');
@@ -62,11 +56,9 @@ if ($action === 'project_save') {
   if ($descLen < 10 || $descLen > 400)  reply(false, 'Description must be 10 to 400 characters.', 422);
   if (mb_strlen($p['learned']) > 300)   reply(false, 'What I learned is too long (max 300).', 422);
   if ($techLen < 2 || $techLen > 100)   reply(false, 'Tech must be 2 to 100 characters.', 422);
-  // Letters, numbers, - and _ only, so nobody can point to other folders with "../".
   if (!preg_match('/^[A-Za-z0-9_-]{0,60}$/', $p['img'])) {
     reply(false, 'Screenshot name can only use letters, numbers, - and _.', 422);
   }
-  // Only http/https links, so a "javascript:" link cannot be saved.
   if ($p['link'] !== '') {
     $scheme = strtolower((string)parse_url($p['link'], PHP_URL_SCHEME));
     if (mb_strlen($p['link']) > 200 || !filter_var($p['link'], FILTER_VALIDATE_URL) || !in_array($scheme, ['http', 'https'], true)) {
@@ -76,13 +68,13 @@ if ($action === 'project_save') {
 
   $index = field('index');
   if ($index === '') {
-    $content['projects'][] = $p;                      // add
+    $content['projects'][] = $p;
     $message = 'Project added.';
   } else {
     if (!ctype_digit($index) || !isset($content['projects'][(int)$index])) {
       reply(false, 'Project not found.', 404);
     }
-    $content['projects'][(int)$index] = $p;           // edit
+    $content['projects'][(int)$index] = $p;
     $message = 'Project updated.';
   }
 
