@@ -1,0 +1,5 @@
+data/messages.txt
+data/content.json
+data/content.lock
+config.php
+.DS_Store
