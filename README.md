@@ -7,7 +7,7 @@ Requires PHP 7.4+ (or XAMPP).
 ```
 php -S localhost:8000
 ```
-Open http://localhost:8000. With XAMPP, put this folder in `htdocs` and open http://localhost/portfolio.
+
 
 ## Features
 - Sections: Home, About, Projects (filter + live search + details popup), Skills, Contact.
